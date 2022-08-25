@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { Company } from "../models";
+import { Job } from "../models";
 
-class CompaniesController {
+class JobsController {
     async index(req: Request, res: Response) {
         try {
-            const companies = await Company.findAll({ order: ['id']});
-            return res.status(200).json(companies);
+            const jobs = await Job.findAll({ include: 'company' });
+            return res.status(200).json(jobs);
         } catch (error) {
             if (error instanceof Error) {
                 return res.status(500).json({ message: error.message });
@@ -15,9 +15,10 @@ class CompaniesController {
 
     async save(req: Request, res: Response) {
         try {
-            const { name, email, website, bio } = req.body;
-            const company = await Company.create({ name, email, website, bio })
-            return res.status(201).json(company);
+            const { title, description, limitDate, companyId } = req.body;
+            const job = await Job.create({ title, description, limitDate, companyId });
+
+            return res.status(201).json(job);
         } catch (error) {
             if (error instanceof Error) {
                 return res.status(500).json({ message: error.message });
@@ -28,13 +29,13 @@ class CompaniesController {
     async show(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const company = await Company.findByPk(id, { include: 'jobs'});
+            const job = await Job.findByPk(id, { include: 'company'});
 
-            if (company) {
-                return res.status(200).json(company);
+            if (job) {
+                return res.status(200).json(job);
             }
 
-            return res.status(404).json({ message: "Empresa não encontrada" });
+            return res.status(404).json({ message: 'Trabalho não encontrado' });
         } catch (error) {
             if (error instanceof Error) {
                 return res.status(500).json({ message: error.message });
@@ -45,22 +46,22 @@ class CompaniesController {
     async update(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { name, email, website, bio } = req.body;
-            const company = await Company.findByPk(id);
+            const { title, description, limitDate, companyId } = req.body;
 
-            if (company) {
-                const [ _, companies ] = await Company.update(
-                    { name, email, website, bio },
+            const job = await Job.findByPk(id, { include: 'company'});
+
+            if (job) {
+                const [_, jobs ] = await Job.update(
+                    {title, description, limitDate, companyId },
                     {
                         where: {id},
                         returning: true
                     }
                 )
-                return res.status(200).json(companies[0]);
+                return res.status(200).json(jobs[0]);
             }
 
-            return res.status(404).json({ message: "Empresa não encontrada" });
-
+            return res.status(404).json({ message: 'Trabalho não encontrado' });
         } catch (error) {
             if (error instanceof Error) {
                 return res.status(500).json({ message: error.message });
@@ -71,14 +72,14 @@ class CompaniesController {
     async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const company = await Company.findByPk(id);
+            const job = await Job.findByPk(id);
 
-            if (company) {
-                company.destroy();
+            if (job) {
+                job.destroy();
                 return res.status(204).json({});
             }
 
-            return res.status(404).json({ message: "Empresa não encontrada" });
+            return res.status(404).json({ message: 'Trabalho não encontrado' });
         } catch (error) {
             if (error instanceof Error) {
                 return res.status(500).json({ message: error.message });
@@ -87,4 +88,4 @@ class CompaniesController {
     }
 }
 
-export = new CompaniesController();
+export default new JobsController();

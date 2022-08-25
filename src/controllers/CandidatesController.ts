@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import Candidate from "../models/Candidate";
+import { Candidate } from "../models";
 
 class CandidatesController {
     async index(req: Request, res: Response) {
         const candidates = await Candidate.findAll();
-        return res.json(candidates); 
+        return res.json(candidates);
     }
 
     async save(req: Request, res: Response) {
