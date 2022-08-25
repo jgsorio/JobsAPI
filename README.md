@@ -1,4 +1,5 @@
 # Projeto para Empresas, Candidatos e Jobs
+Projeto construído utilizando NodeJS + Typescript + Express + Sequelize + PostgreSQL + Docker
 
 ## Instalação
 
@@ -39,4 +40,5 @@ A API estará funcionando em: http://localhost:3333
 
 ## Endpoints
 http://localhost:3333/companies <br>
-http://localhost:3333/candidates
+http://localhost:3333/candidates <br>
+http://localhost:333/jobs
